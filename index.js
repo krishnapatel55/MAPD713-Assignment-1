@@ -2,21 +2,21 @@ var SERVER_NAME = 'image-api'
 var PORT = 5000;
 var HOST = '127.0.0.1';
 
+var requestCounterGET = 0;
+var requestCounterPOST = 0;
 
 var restify = require('restify')
 
-  // Get a persistence engine for the users
-  , ImageSave = require('save')('images')
+  // Get a persistence engine for the images
+  , ImagesSave = require('save')('images')
 
   // Create the restify server
   , server = restify.createServer({ name: SERVER_NAME})
 
   server.listen(PORT, HOST, function () {
   console.log('Server %s listening at %s', server.name, server.url)
-  console.log('Resources:')
-  console.log('***********')
-  console.log(' /images')
-  console.log(' /images/:id')  
+  console.log('Endpoints: %s/images',server.url)
+  console.log('Method: GET, POST') 
 })
 
 server
@@ -28,36 +28,25 @@ server
 
 // Get all users in the system
 server.get('/images', function (req, res, next) {
+  //console.log('> Images GET: recieved request')
+
+  requestCounterGET++;
 
   // Find every entity within the given collection
-  ImageSave.find({}, function (error, images) {
+  ImagesSave.find({}, function (error, images) {
+    //console.log('< Images GET: sending response')
 
     // Return all of the users in the system
     res.send(images)
   })
+  console.log('Processed Request Count--> GET: %s, POST: %s',requestCounterGET,requestCounterPOST)
 })
 
-// Get a single user by their user id
-server.get('/images/:id', function (req, res, next) {
-
-  // Find a single user by their id within save
-  ImageSave.findOne({ _id: req.params.id }, function (error, image) {
-
-    // If there are any errors, pass them to next in the correct format
-    if (error) return next(new restify.InvalidArgumentError(JSON.stringify(error.errors)))
-
-    if (image) {
-      // Send the user if no issues
-      res.send(image)
-    } else {
-      // Send 404 header if the user doesn't exist
-      res.send(404)
-    }
-  })
-})
 
 // Create a new user
 server.post('/images', function (req, res, next) {
+
+  requestCounterPOST++;
 
   // Make sure name is defined
   if (req.params.imageId === undefined ) {
@@ -92,6 +81,7 @@ server.post('/images', function (req, res, next) {
     // Send the user if no issues
     res.send(201, image)
   })
+  console.log('Processed Request Count--> GET: %s, POST: %s',requestCounterGET,requestCounterPOST)
 })
 
 
@@ -99,7 +89,7 @@ server.post('/images', function (req, res, next) {
 server.del('/images', function (req, res, next) {
 
   // Delete the user with the persistence engine
-  ImageSave.deleteMany({}, function (error, image) {
+  ImagesSave.deleteMany({}, function (error, image) {
 
     // If there are any errors, pass them to next in the correct format
     if (error) return next(new restify.InvalidArgumentError(JSON.stringify(error.errors)))
