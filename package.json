@@ -1,13 +1,13 @@
 {
-    "name": "UserApi",
+    "name": "imageapi",
     "version": "1.0.0",
-    "description": "REST API - Users",
+    "description": "REST API - Images",
     "dependencies": {
         "restify": "4.1.1",
 		"save": "2.3.0"
 
     },
-    "author": "krishna",
+    "author": "Krishna Patel",
 	"private": true,
 	"main": "index.js"
 }
