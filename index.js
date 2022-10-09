@@ -22,27 +22,29 @@ var restify = require('restify')
 server
   // Allow the use of POST
   .use(restify.fullResponse())
-  // Maps req.body to req.params so there is no switching between them
+  // Maps req.body to req.params
   .use(restify.bodyParser())
 
 // Get all images
 server.get('/images', function (req, res, next) {
-  //console.log('> Images GET: recieved request')
+    console.log('> Images GET: recieved request')
 
-  requestCounterGET++;
+    requestCounterGET++;
 
-  // Find every image in collection
-  ImagesSave.find({}, function (error, images) {
-    //console.log('< Images GET: sending response')
-    // Return all images
-    res.send(images)
-  })
+    console.log('< Images GET: sending response')
+
+    // Find every image in collection
+    ImagesSave.find({}, function (error, images) {
+      // Return all images
+      res.send(images)
+    })
   console.log('Processed Request Count--> GET: %s, POST: %s',requestCounterGET,requestCounterPOST)
 })
 
 
 // Create a new image
 server.post('/images', function (req, res, next) {
+  console.log('> Images POST: recieved request')
 
   requestCounterPOST++;
 
@@ -69,7 +71,7 @@ server.post('/images', function (req, res, next) {
 		url: req.params.url, 
 		size: req.params.size
 	}
-
+  console.log('< Images POST: sending response')
   // Create image
   ImagesSave.create( newImage, function (error, image) {
     // If there are any errors, pass them to next in the correct format
@@ -82,7 +84,9 @@ server.post('/images', function (req, res, next) {
 
 // Delete all images
 server.del('/images', function (req, res, next) {
+  console.log('> Images DELETE: recieved request')
   ImagesSave.deleteMany({}, function (error, image) {
+    console.log('< Images DELETE: sending response')
     // If there are any errors, pass them to next in the correct format
     if (error) return next(new restify.InvalidArgumentError(JSON.stringify(error.errors)))
     res.send()
